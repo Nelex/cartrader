@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CarCard/>
+    <CarCards/>
   </div>
 </template>
 <script setup lang="ts">
