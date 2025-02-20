@@ -1,31 +1,21 @@
 <script setup>
 import {useUtilities} from "~/composables/useUtilities.js";
-import useCars from "~/composables/useCars.js";
+import useFetchCar from "~/composables/useFetchCar.js";
+const route = useRoute();
+
+const {data: car} = await useFetchCar(route.params.id);
 
 definePageMeta({
-  layout: 'custom'
+  layout: 'custom',
+  car: Object
 })
 const {toTitleCase} = useUtilities();
-const {cars} = useCars();
 
-const route = useRoute();
 useHead({
   title: toTitleCase(route.params.name)
 })
 
-const car = computed(() => {
-  return cars.find((c) => {
-        return c.id === parseInt(route.params.id);
-      }
-  );
-})
 
-if (!car.value) {
-  throw createError({
-    statusCode: 404,
-    message: `Car with ID ${route.params.id} not found.`
-  });
-}
 
 </script>
 <template>
