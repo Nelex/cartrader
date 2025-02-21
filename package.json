@@ -13,9 +13,12 @@
     "@nuxt/image": "^1.9.0",
     "@nuxtjs/supabase": "^1.4.6",
     "@nuxtjs/tailwindcss": "^6.13.1",
+    "@prisma/client": "^6.4.1",
     "@vueuse/core": "^12.7.0",
     "@vueuse/nuxt": "^12.7.0",
+    "joi": "^17.13.3",
     "nuxt": "^3.15.4",
+    "prisma": "^6.4.1",
     "vue": "latest",
     "vue-router": "latest"
   }
