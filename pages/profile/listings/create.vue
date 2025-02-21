@@ -7,7 +7,7 @@ definePageMeta({
 })
 
 const {makes} = useCars();
-const info = useState('adInfo', () =>{
+const info = useState('adInfo', () => {
   return {
     make: '',
     model: '',
@@ -17,9 +17,12 @@ const info = useState('adInfo', () =>{
     city: '',
     seats: '',
     description: '',
-    image: null,
+    image: "url",
   }
 })
+
+const errorMessage = ref("");
+const user = useSupabaseUser();
 
 const onChangeInput = (data, name) => {
   info.value[name] = data;
@@ -40,41 +43,91 @@ const inputs = [
   },
   {
     id: 3,
+    title: 'Price *',
+    name: 'price',
+    placeholder: '12000',
+  },
+  {
+    id: 4,
     title: 'Miles *',
     name: 'miles',
     placeholder: '1000',
   },
   {
-    id: 4,
+    id: 5,
     title: 'City *',
     name: 'city',
     placeholder: 'Austin',
   },
   {
-    id: 5,
+    id: 6,
     title: 'Seats *',
     name: 'seats',
     placeholder: '5',
   },
   {
-    id: 1,
+    id: 7,
     title: 'Features *',
     name: 'features',
     placeholder: 'Leather Interion, No Accidents',
   },
 ]
 
+const isButtonDisabled = computed(() => {
+  for (let key in info.value) {
+    if (!info.value[key]) {
+      console.log(`empty: ${key}`);
+      return true;
+    }
+  }
+  return false;
+});
+
+const handleSubmit = async () => {
+  const body = {
+    ...info.value,
+    city: info.value.city.toLowerCase(),
+    features: info.value.features.split(', '),
+    numberOfSeats: parseInt(info.value.seats),
+    year: parseInt(info.value.year),
+    price: parseInt(info.value.price),
+    miles: parseInt(info.value.miles),
+    name: `${info.value.make} ${info.value.model}`,
+    listerId: user.value.id,
+    image: "someurl"
+  }
+  delete body.seats;
+
+  try {
+    const response = await $fetch('/api/car/listings', {
+      method: 'POST',
+      body,
+    })
+    navigateTo('/profile/listings',);
+  } catch (error) {
+    errorMessage.value = error.statusMessage;
+  }
+}
+
 </script>
 <template>
-<div>
-  <div class="mt-24">
-    <h1 class="text-6xl">Create a new listing</h1>
+  <div>
+    <div class="mt-24">
+      <h1 class="text-6xl">Create a new listing</h1>
+    </div>
+    <div class="shadow rounded p-3 mt-5 flex flex-wrap justify-between">
+      <CarAddSelect title="Make *" :options="makes" name="make" @change-input="onChangeInput"/>
+      <CarAddInput v-for="input in inputs" :key="input.id" :title="input.title" :name="input.name"
+                   :placeholder="input.placeholder" @change-input="onChangeInput"/>
+      <CarAddTextarea title="Description" name="description" placeholder="" @change-input="onChangeInput"/>
+      <CarAddImage @change-input="onChangeInput"/>
+      <div>
+        <button class="bg-blue-400 text-white rounded py-2 px-7 mt-3" :disabled="isButtonDisabled"
+                @click="handleSubmit"
+        >Submit
+        </button>
+        <p v-if="errorMessage" class="mt-3 text-red-400">{{ errorMessage }}</p>
+      </div>
+    </div>
   </div>
-  <div class="shadow rounded p-3 mt-5 flex flex-wrap justify-between">
-    <CarAddSelect title="Make *" :options="makes" name="make" @change-input="onChangeInput"/>
-    <CarAddInput v-for="input in inputs" :key="input.id" :title="input.title" :name="input.name" :placeholder="input.placeholder" @change-input="onChangeInput"/>
-    <CarAddTextarea title="Description" name="description" placeholder="" @change-input="onChangeInput"/>
-    <CarAddImage @change-input="onChangeInput"/>
-  </div>
-</div>
 </template>

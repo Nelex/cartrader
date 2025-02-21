@@ -1,11 +1,18 @@
 <script setup>
-import useCars from "~/composables/useCars.js";
-
+const user = useSupabaseUser();
 definePageMeta({
   layout: "custom",
   middleware: ["auth"],
 })
-const {listings} = useCars()
+
+const {data: listings, refresh} = useFetch(`/api/car/listings/user/${user.value.id}`)
+
+const handleDelete = async (id) => {
+  await $fetch(`/api/car/listings/${id}`,{
+    method: "DELETE"
+  })
+  listings.value = listings.value.filter((item) => item.id !== id)
+}
 </script>
 <template>
   <div>
@@ -17,7 +24,7 @@ const {listings} = useCars()
       </NuxtLink>
     </div>
     <div class="shadow rounded p-3 mt-5">
-      <CarListingCard v-for="listing in listings" :key="listing.id" :listing="listing" />
+      <CarListingCard v-for="listing in listings" :key="listing.id" :listing="listing" @delete-click="handleDelete"/>
     </div>
   </div>
 </template>
