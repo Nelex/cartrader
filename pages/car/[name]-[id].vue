@@ -15,8 +15,6 @@ useHead({
   title: toTitleCase(route.params.name)
 })
 
-
-
 </script>
 <template>
   <div v-if="car">

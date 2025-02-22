@@ -23,10 +23,13 @@ const info = useState('adInfo', () => {
 
 const errorMessage = ref("");
 const user = useSupabaseUser();
+const supabase = useSupabaseClient();
 
 const onChangeInput = (data, name) => {
   info.value[name] = data;
 }
+
+
 
 const inputs = [
   {
@@ -84,6 +87,12 @@ const isButtonDisabled = computed(() => {
 });
 
 const handleSubmit = async () => {
+  const fileName = Math.floor(Math.random() * 100000000);
+  const {data, error} = await supabase.storage.from("images").upload("public/"+fileName,info.value.image)
+
+  if (error) {
+    errorMessage.value = "Can't upload the image";
+  }
   const body = {
     ...info.value,
     city: info.value.city.toLowerCase(),
@@ -94,7 +103,7 @@ const handleSubmit = async () => {
     miles: parseInt(info.value.miles),
     name: `${info.value.make} ${info.value.model}`,
     listerId: user.value.id,
-    image: "someurl"
+    image: data.path
   }
   delete body.seats;
 
@@ -106,6 +115,7 @@ const handleSubmit = async () => {
     navigateTo('/profile/listings',);
   } catch (error) {
     errorMessage.value = error.statusMessage;
+    await supabase.storage.from("images").remove(data.path)
   }
 }
 
