@@ -1,3 +1,6 @@
+# About this repo
+This is the code for course on Udemy - [The Nuxt 3 Bootcamp - The Complete Developer Guide](https://www.udemy.com/course/the-nuxt-3-bootcamp-the-complete-developer-guide/) 
+
 # Nuxt Minimal Starter
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
